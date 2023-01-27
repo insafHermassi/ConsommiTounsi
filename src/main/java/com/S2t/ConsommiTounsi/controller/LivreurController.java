@@ -1,62 +1,46 @@
 package com.S2t.ConsommiTounsi.controller;
-
 import com.S2t.ConsommiTounsi.entities.Livreur;
+import com.S2t.ConsommiTounsi.exception.RessourcesNotFound;
 import com.S2t.ConsommiTounsi.service.LivreurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/livreurs")
+@CrossOrigin(allowedHeaders = "*", origins = "*")
 public class LivreurController {
+
     @Autowired
     LivreurService livreurService;
     @PostMapping
-    public Livreur saveLivreur(@RequestBody Livreur livreur){
-
-        return livreurService.Save(livreur);
+    public Livreur creteLivreur(@Valid @RequestBody Livreur livreur){
+        return livreurService.save(livreur);
     }
-
     @GetMapping
-    public List<Livreur> getLivreur() {
-        return livreurService.getLivreur();
+    public List<Livreur> getLivreurs(){
+        return livreurService.getLivreurs();
+    }
+    @GetMapping(value="/{id}")
+    public Livreur getLivreur(@PathVariable("id") Long id) throws RessourcesNotFound {
+        return livreurService.getLivreur(id);
     }
 
-    @GetMapping(value = "/{id}")
-
-    public Livreur getLivreur(@PathVariable("id")long id)  {
+    @GetMapping(value="/get")
+    public Livreur getLivreurByParam(@RequestParam("livreurId") Long id) throws RessourcesNotFound {
         return livreurService.getLivreur(id);
     }
 
     @DeleteMapping
-    public Map<String,Boolean> deleteLivreur(@RequestParam("id") long id){
+    public Map<String,Boolean> delete(@RequestParam("id")Long id){
         return livreurService.deleteLivreur(id);
     }
 
     @PutMapping
-    public Livreur updateLivreur(@RequestParam("id") long id, @RequestBody Livreur livreur){
-        return  livreurService.updateLivreur(id, livreur);
+    public Livreur updateLivraison(@Valid @RequestParam("id") Long id , @RequestBody Livreur livreur) throws RessourcesNotFound {
+        return livreurService.update(id,livreur);
     }
-
-    @GetMapping(value = "/get")
-    public  List<Livreur> getByFirstnameOrLastname(@RequestParam("firstnameOrlastname") String firstname, String lastname) {
-        return livreurService.findByFirstnameOrlastname(firstname, lastname);
-    }
-
-    @GetMapping(value = "/search")
-    public  List<Livreur> getByisAvailable(@RequestParam("isAvailable") boolean isAvailable){
-        return livreurService.searchByisAvailable(isAvailable);
-    }
-
-    @GetMapping(value = "/find")
-    public  List<Livreur> getBynbrLivraison(@RequestParam("nbrLivraison") double nbrLivraison){
-        return livreurService.searchBynbrLivraison(nbrLivraison);
-    }
-    @GetMapping(value = "/locate")
-    public  List<Livreur> getBycity(@RequestParam("city") String city){
-        return livreurService.findBycity(city);
-    }
-
 }
