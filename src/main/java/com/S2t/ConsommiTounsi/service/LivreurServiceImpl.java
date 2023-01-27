@@ -1,6 +1,7 @@
 package com.S2t.ConsommiTounsi.service;
 
 import com.S2t.ConsommiTounsi.entities.Livreur;
+import com.S2t.ConsommiTounsi.exception.RessourcesNotFound;
 import com.S2t.ConsommiTounsi.repository.LivreurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,60 +12,45 @@ import java.util.Map;
 @Service
 public class LivreurServiceImpl implements LivreurService{
     @Autowired
-    LivreurRepository livreurRepository;
-
-
+    LivreurRepository  livreurRepository;
     @Override
-    public Livreur Save(Livreur livreur) {
+    public Livreur save(Livreur livreur) {
         return livreurRepository.save(livreur);
     }
 
     @Override
-    public Livreur getLivreur(long id) {
-        return livreurRepository.findById(id).get();
+    public Livreur getLivreur(Long id) throws RessourcesNotFound {
+        Livreur livreur= livreurRepository.findById(id).orElseThrow(()-> new RessourcesNotFound("livreur not found for id :"+id));
+        return livreur;
     }
 
     @Override
-    public List<Livreur> getLivreur() {
-        return livreurRepository.findAll();
+    public List<Livreur> getLivreurs() {
+        return  (List<Livreur>) livreurRepository.findAll() ;
     }
 
     @Override
-    public Map<String, Boolean> deleteLivreur(long id) {
-        livreurRepository.deleteById( id);
-        Map<String,Boolean>res=new HashMap<>();
+    public Map<String, Boolean> deleteLivreur(Long id) {
+        livreurRepository.deleteById(id);
+        Map<String,Boolean> res = new HashMap<>();
         res.put("deleted",Boolean.TRUE);
-        return res;
+        return res;    }
+
+    @Override
+    public Livreur findByPlace(String place) {
+        return livreurRepository.findByPlace(place);
     }
 
     @Override
-    public Livreur updateLivreur(long id, Livreur livreur) {
-       Livreur old=getLivreur(id);
-       old.setSalary(livreur.getSalary());
-       old.setNbrLivraison(livreur.getNbrLivraison());
-       old.setFirstname(livreur.getFirstname());
-       old.setLastname(livreur.getLastname());
-       old.setEmail(livreur.getEmail());
-        return livreurRepository.save(old);
-    }
-
-    @Override
-    public List<Livreur> findBycity(String city) {
-        return livreurRepository.findBycity(city);
-    }
-
-    @Override
-    public List<Livreur> searchByisAvailable(boolean isAvailable) {
-        return livreurRepository.findByisAvailable(isAvailable);
-    }
-
-    @Override
-    public List<Livreur> findByFirstnameOrlastname(String firstname, String lastname) {
-        return livreurRepository.findByFirstnameOrLastname(firstname,lastname);
-    }
-
-    @Override
-    public List<Livreur> searchBynbrLivraison(double nbrLivraison) {
-        return livreurRepository.findBynbrLivraison(nbrLivraison);
+    public Livreur update(Long id, Livreur livreur) throws RessourcesNotFound {
+        Livreur lv=getLivreur(id);
+        lv.setDisponibilite(livreur.getDisponibilite());
+        lv.setMaps(livreur.getMaps());
+        lv.setPlace(livreur.getPlace());
+        lv.setPrime(livreur.getPrime());
+        lv.setSalaire(livreur.getSalaire());
+        lv.setStatique(livreur.getStatique());
+        lv.setCharge(livreur.getCharge());
+        return livreurRepository.save(lv);
     }
 }

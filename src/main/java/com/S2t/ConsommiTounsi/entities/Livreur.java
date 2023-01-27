@@ -1,41 +1,57 @@
 package com.S2t.ConsommiTounsi.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
-@Table(name="livreurs")
+@Table(name= "livreurs")
 @Data
-public class Livreur implements Serializable {
+public class Livreur  implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name  = "id", nullable = false)
-    private long id;
-    @Column(name = "firstname")
-    private String firstname;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
-    @Column(name="lastname")
-    private String lastname;
+    private Boolean disponibilite;
 
-    @Column(name = "phone")
-    private String phone;
+    private String maps;
+    private String place;
+    private double prime;
+    private double salaire;
+    private double statique;
+    private int charge ;
 
-    @Column(name = "city")
-    private String city;
-    @Email
-    @Column(name = "email")
-    private String email;
+    @JsonIgnore
+    @OneToMany(mappedBy = "livreur", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    private List<Livraison> livraison;
 
+    public Long getId() {
+        return id;
+    }
 
-    @Column(name="salary")
-    private double salary;
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    @Column(name ="isAvailable")
-    private boolean isAvailable;
+    public double getPrime() {
 
-    @Column(name = "nbrLivraison")
-    private double nbrLivraison;
+        if (charge <= 10) {
+            prime = 0.10;
+        } else if (charge > 10 && charge <= 20) {
+            prime = 0.15;
+        } else if (charge > 20 && charge <= 30) {
+            prime = 0.20;
+        } else if (charge > 30 && charge <= 40) {
+            prime = 0.25;
+        } else {
+            prime = 0.30;
+        }
+        return this.prime=prime;
+    }
 }
+
